@@ -214,13 +214,13 @@ mysqli_close($conn);
                                         if (isset($available_slots[$day])) {
                                             echo '<div class="booked-date">' . $day . '</div>';
                                             foreach ($available_slots[$day] as $slot) {
-                                                echo '<div class="slot-buttons">
-                                                        <div>' . htmlspecialchars($slot['start_time']) . ' - ' . htmlspecialchars($slot['end_time']) . '</div>
-                                                        <form method="post" action="" class="float-right">
-                                                            <input type="hidden" name="slot_id" value="' . htmlspecialchars($slot['id']) . '">
-                                                            <button type="submit" class="btn btn-danger btn-sm" name="delete">&times;</button>
-                                                        </form>
-                                                      </div>';
+                                                $time_display = date('H:i', strtotime($slot['start_time'])) . ' - ' . date('H:i', strtotime($slot['end_time']));
+                                                $slot_info = '<div class="slot-info">' . $time_display . ' <a href="https://instagram.com/' . htmlspecialchars($slot['instagram_link']) . '" target="_blank">' . htmlspecialchars($slot['model_name']) . '</a></div>';
+                                                $delete_form = '<form method="post" action="" class="float-right">
+                                                                    <input type="hidden" name="slot_id" value="' . htmlspecialchars($slot['id']) . '">
+                                                                    <button type="submit" class="btn btn-danger btn-sm" name="delete">&times;</button>
+                                                                </form>';
+                                                echo '<div class="slot-buttons">' . ($slot['model_name'] ? '<span class="booked-slot">' . $slot_info . '</span>' : '<span class="non-booked">' . $time_display . '</span>') . $delete_form . '</div>';
                                             }
                                         } else {
                                             echo '<div class="non-booked">' . $day . '</div>';
