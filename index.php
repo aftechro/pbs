@@ -171,23 +171,26 @@ $bookedSlots = fetchBookedTimeSlots($conn, $selected_date);
     <h1 class="mt-4 text-center">Photography Calendar</h1>
 <form method="get" action="">
     <div class="form-group">
-        <label for="selected_date">Select your booking date:</label>
-        <select class="form-control" id="selected_date" name="selected_date">
-            <?php 
-            // Filter available dates to exclude past dates
-            $currentDate = date("Y-m-d");
-            $futureDates = array_filter($availableDates, function($date) use ($currentDate) {
-                return $date >= $currentDate;
-            });
+<label for="selected_date">Select your booking date:</label>
+<select class="form-control" id="selected_date" name="selected_date">
+    <?php 
+    // Filter available dates to exclude past dates
+    $currentDate = date("Y-m-d");
+    $futureDates = array_filter($availableDates, function($date) use ($currentDate) {
+        return $date >= $currentDate;
+    });
 
-            // Sort future dates in ascending order
-            sort($futureDates);
+    // Sort future dates in ascending order
+    sort($futureDates);
 
-            foreach ($futureDates as $date) : 
-            ?>
-                <option value="<?php echo $date; ?>" <?php if ($date === $selected_date) echo 'selected'; ?>><?php echo $date; ?></option>
-            <?php endforeach; ?>
-        </select>
+    foreach ($futureDates as $date) : 
+        // Format the date to display in "Friday, 19 April 2024" format
+        $formattedDate = date("l, j F Y", strtotime($date));
+    ?>
+        <option value="<?php echo $date; ?>" <?php if ($date === $selected_date) echo 'selected'; ?>><?php echo $formattedDate; ?></option>
+    <?php endforeach; ?>
+</select>
+
     </div>
 <div class="row">
     <div class="col-md-6">
@@ -263,7 +266,7 @@ $bookedSlots = fetchBookedTimeSlots($conn, $selected_date);
                             <br>
                             Model Name: <?php echo $bookedSlot['model_name']; ?>
                             <br>
-                            Instagram Link: <a href="https://instagram.com/<?php echo $bookedSlot['instagram_link']; ?>" target="_blank"><?php echo $bookedSlot['instagram_link']; ?></a>
+                            Instagram username: <a href="https://instagram.com/<?php echo $bookedSlot['instagram_link']; ?>" target="_blank"><?php echo $bookedSlot['instagram_link']; ?></a>
                             <br>
                             Mobile Number: <?php echo $bookedSlot['mobile_number']; ?>
                             <br>
@@ -445,7 +448,7 @@ $bookedSlots = fetchBookedTimeSlots($conn, $selected_date);
         <input type="text" class="form-control" id="model_name" name="model_name" required>
     </div>
     <div class="form-group">
-        <label for="instagram_link">Instagram Link:</label>
+        <label for="instagram_link">Instagram username:</label>
         <input type="text" class="form-control" id="instagram_link" name="instagram_link" required>
     </div>
     <div class="form-group">
