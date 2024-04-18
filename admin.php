@@ -44,6 +44,39 @@ function fetchAvailableSlotsForMonth($conn, $year, $month) {
     return array('first_day_of_month' => $first_day_of_month, 'available_slots' => $available_slots);
 }
 
+// Function to count bookings
+function countBookings($conn) {
+    $sql = "SELECT COUNT(*) AS bookings_count FROM available_times WHERE is_booked = 1";
+    $result = mysqli_query($conn, $sql);
+    $row = mysqli_fetch_assoc($result);
+    return $row['bookings_count'];
+}
+
+// Function to count available slots
+function countAvailableSlots($conn) {
+    $sql = "SELECT COUNT(*) AS available_slots_count FROM available_times WHERE is_booked = 0";
+    $result = mysqli_query($conn, $sql);
+    $row = mysqli_fetch_assoc($result);
+    return $row['available_slots_count'];
+}
+
+
+// Function to fetch the next booked slot
+function fetchNextBooking($conn) {
+    $sql = "SELECT * FROM available_times WHERE is_booked = 1 AND date >= CURDATE() ORDER BY date ASC LIMIT 1";
+    $result = mysqli_query($conn, $sql);
+    if ($result && mysqli_num_rows($result) > 0) {
+        return mysqli_fetch_assoc($result);
+    } else {
+        return null;
+    }
+}
+
+// Fetch the next booking
+$next_booking = fetchNextBooking($conn);
+
+
+
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['submit'])) {
@@ -103,6 +136,10 @@ $month_data = fetchAvailableSlotsForMonth($conn, $current_year, $current_month);
 $first_day_of_month = $month_data['first_day_of_month'];
 $available_slots = $month_data['available_slots'];
 
+// Get counts of bookings and available slots
+$bookings_count = countBookings($conn);
+$available_slots_count = countAvailableSlots($conn);
+
 // Close connection
 mysqli_close($conn);
 ?>
@@ -110,6 +147,9 @@ mysqli_close($conn);
 <html>
 <head>
     <title>Admin Panel</title>
+	<!-- Include Font Awesome CSS -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
     <!-- Include Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- Dark Theme CSS -->
@@ -142,140 +182,184 @@ mysqli_close($conn);
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container">
-    <!-- Bookings -->
-    <a class="navbar-brand" href="#">Bookings</a>
+        <div class="container">
+            <!-- Bookings -->
+            <a class="navbar-brand" href="#">Bookings</a>
 
-    <!-- Toggler/collapsibe Button -->
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+            <!-- Toggler/collapsibe Button -->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-    <!-- Navbar links -->
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav mr-auto">
-        <!-- Home -->
-        <li class="nav-item">
-          <a class="nav-link" href="index.php">Home</a>
-        </li>
-        <!-- Set slots -->
-        <li class="nav-item">
-          <a class="nav-link" href="admin.php">Set slots</a>
-        </li>
-      </ul>
-    </div>
-  </div>
-</nav>
-<br>
-    
+            <!-- Navbar links -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mr-auto">
+                    <!-- Home -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.php">Home</a>
+                    </li>
+                    <!-- Set slots -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="admin.php">Set slots</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <br>
+
     <div class="container">
-       
-<div class="card">
-  <h5 class="card-header">Set Available Slots</h5>
-  <div class="card-body">
-    <form method="post" action="">
-      <div class="form-group">
-        <label for="dates" class="text-light">Dates:</label>
-        <input type="text" class="form-control" id="dates" name="dates" placeholder="Select dates" required>
-      </div>
-      <div class="form-group row">
-        <div class="col">
-          <label for="start_time" class="text-light">Start Time:</label>
-          <input type="time" class="form-control" id="start_time" name="start_time" required>
+      
+
+    <div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <h5 class="card-header">Set Available Slots</h5>
+            <div class="card-body">
+                <form method="post" action="">
+                    <div class="form-group">
+                        <label for="dates" class="text-light">Dates:</label>
+                        <input type="text" class="form-control" id="dates" name="dates" placeholder="Select dates" required>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col">
+                            <label for="start_time" class="text-light">Start Time:</label>
+                            <input type="time" class="form-control" id="start_time" name="start_time" required>
+                        </div>
+                        <div class="col">
+                            <label for="end_time" class="text-light">End Time:</label>
+                            <input type="time" class="form-control" id="end_time" name="end_time" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col">
+                            <button type="submit" class="btn btn-primary" name="submit">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
-        <div class="col">
-          <label for="end_time" class="text-light">End Time:</label>
-          <input type="time" class="form-control" id="end_time" name="end_time" required>
+        <hr>
+    </div>
+
+    <div class="col-md-6">
+        <div class="row">
+           <div class="col">
+    <div class="card bg-primary text-white square-card">
+        <div class="card-body">
+            <h5 class="card-title"><i class="fas fa-calendar-check"></i> Active Bookings</h5>
+            <h2 class="card-text"><?= $bookings_count ?></h2>
         </div>
-      </div>
-      <div class="form-group row">
-        <div class="col">
-          <button type="submit" class="btn btn-primary" name="submit">Submit</button>
-        </div>
-        <div class="col">
-          <?= isset($success_message) ? $success_message : '' ?>
-          <?= isset($failure_message) ? $failure_message : '' ?>
-        </div>
-      </div>
-    </form>
-  </div>
+    </div>
 </div>
-<hr>
- <div class="card">
-  <h5 class="card-header">Existing Slots</h5>
-  <div class="card-body">
-   
-      <div class="col-md-12">
-       
-        <div class="card text-dark bg-light mb-3">
-          <div class="card-header">
-            <a href="?year=<?= $current_month == 1 ? $current_year - 1 : $current_year ?>&month=<?= $current_month == 1 ? 12 : $current_month - 1 ?>" class="btn btn-secondary">&lt;</a>
-            <?= date('F Y', strtotime("$current_year-$current_month-01")) ?>
-            <a href="?year=<?= $current_month == 12 ? $current_year + 1 : $current_year ?>&month=<?= $current_month == 12 ? 1 : $current_month + 1 ?>" class="btn btn-secondary">&gt;</a>
-          </div>
-          <div class="card-body">
-            <table class="table table-bordered calendar">
-              <thead>
-                <tr>
-                  <th scope="col">Mon</th>
-                  <th scope="col">Tue</th>
-                  <th scope="col">Wed</th>
-                  <th scope="col">Thu</th>
-                  <th scope="col">Fri</th>
-                  <th scope="col">Sat</th>
-                  <th scope="col">Sun</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <?php
-                  // Fill in empty cells for days before the first day of the month
-                  for ($i = 1; $i < $first_day_of_month; $i++) {
-                      echo '<td></td>';
-                  }
-
-                  $day_counter = $first_day_of_month;
-                  for ($day = 1; $day <= cal_days_in_month(CAL_GREGORIAN, $current_month, $current_year); $day++) {
-                      if ($day_counter == 8) {
-                          echo '</tr><tr>';
-                          $day_counter = 1;
-                      }
-                      $date = sprintf("%d-%02d-%02d", $current_year, $current_month, $day);
-                      echo '<td>';
-                      if (isset($available_slots[$day])) {
-                          echo '<div class="booked-date">' . $day . '</div>';
-                          foreach ($available_slots[$day] as $slot) {
-                              $time_display = date('H:i', strtotime($slot['start_time'])) . ' - ' . date('H:i', strtotime($slot['end_time']));
-                              $slot_info = '<div class="slot-info">' . $time_display . ' <a href="https://instagram.com/' . htmlspecialchars($slot['instagram_link']) . '" target="_blank">' . htmlspecialchars($slot['model_name']) . '</a></div>';
-                              $delete_form = '<form method="post" action="" class="float-right">
-                                              <input type="hidden" name="slot_id" value="' . htmlspecialchars($slot['id']) . '">
-                                              <button type="submit" class="btn btn-danger btn-sm" name="delete">&times;</button>
-                                          </form>';
-                              echo '<div class="slot-buttons">' . ($slot['model_name'] ? '<span class="booked-slot">' . $slot_info . '</span>' : '<span class="non-booked">' . $time_display . '</span>') . $delete_form . '</div>';
-                          }
-                      } else {
-                          echo '<div class="non-booked">' . $day . '</div>';
-                      }
-                      echo '</td>';
-                      $day_counter++;
-                  }
-
-                  // Fill in empty cells for remaining days
-                  while ($day_counter <= 7) {
-                      echo '<td></td>';
-                      $day_counter++;
-                  }
-                  ?>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+<div class="col">
+    <div class="card bg-success text-white square-card">
+        <div class="card-body">
+            <h5 class="card-title"><i class="fas fa-calendar"></i> Available Slots</h5>
+            <h2 class="card-text"><?= $available_slots_count ?></h2>
         </div>
-      </div>
-
-  </div>
+    </div>
 </div>
-<br>
+
+        </div>
+<div class="card mt-3">
+    <h5 class="card-header">Next Booking</h5>
+    <div class="card-body">
+        <?php if ($next_booking): ?>
+            <p class="card-title"><i class="fa fa-female"></i> With: <a href="https://instagram.com/<?= $next_booking['instagram_link'] ?>" target="_blank"><?= $next_booking['model_name'] ?></a></p>
+            <hr style="border-color: white;">
+            <p class="card-text"><i class="fa fa-calendar"></i>  Date: <?= date('l, d F Y', strtotime($next_booking['date'])) ?><br> <i class="fa fa-clock"></i> Time: <?= date('H:i', strtotime($next_booking['start_time'])) ?> - <?= date('H:i', strtotime($next_booking['end_time'])) ?></p>
+        <?php else: ?>
+            <p class="card-text">No bookings scheduled.</p>
+        <?php endif; ?>
+    </div>
+</div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col">
+        <?= isset($success_message) ? $success_message : '' ?>
+        <?= isset($failure_message) ? $failure_message : '' ?>
+    </div>
+</div>
+
+    
+    
+
+
+        <div class="card mt-4">
+            <h5 class="card-header">Existing Slots</h5>
+            <div class="card-body">
+                <div class="col-md-12">
+                    <div class="card text-dark bg-light mb-3">
+                        <div class="card-header">
+                            <a href="?year=<?= $current_month == 1 ? $current_year - 1 : $current_year ?>&month=<?= $current_month == 1 ? 12 : $current_month - 1 ?>" class="btn btn-secondary">&lt;</a>
+                            <?= date('F Y', strtotime("$current_year-$current_month-01")) ?>
+                            <a href="?year=<?= $current_month == 12 ? $current_year + 1 : $current_year ?>&month=<?= $current_month == 12 ? 1 : $current_month + 1 ?>" class="btn btn-secondary">&gt;</a>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered calendar">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Mon</th>
+                                        <th scope="col">Tue</th>
+                                        <th scope="col">Wed</th>
+                                        <th scope="col">Thu</th>
+                                        <th scope="col">Fri</th>
+                                        <th scope="col">Sat</th>
+                                        <th scope="col">Sun</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <?php
+                                        // Fill in empty cells for days before the first day of the month
+                                        for ($i = 1; $i < $first_day_of_month; $i++) {
+                                            echo '<td></td>';
+                                        }
+
+                                        $day_counter = $first_day_of_month;
+                                        for ($day = 1; $day <= cal_days_in_month(CAL_GREGORIAN, $current_month, $current_year); $day++) {
+                                            if ($day_counter == 8) {
+                                                echo '</tr><tr>';
+                                                $day_counter = 1;
+                                            }
+                                            $date = sprintf("%d-%02d-%02d", $current_year, $current_month, $day);
+                                            echo '<td>';
+                                            if (isset($available_slots[$day])) {
+                                                echo '<div class="booked-date">' . $day . '</div>';
+                                                foreach ($available_slots[$day] as $slot) {
+                                                    $time_display = date('H:i', strtotime($slot['start_time'])) . ' - ' . date('H:i', strtotime($slot['end_time']));
+                                                    $slot_info = '<div class="slot-info">' . $time_display . ' <a href="https://instagram.com/' . htmlspecialchars($slot['instagram_link']) . '" target="_blank">' . htmlspecialchars($slot['model_name']) . '</a></div>';
+                                                    $delete_form = '<form method="post" action="" class="float-right">
+                                                                    <input type="hidden" name="slot_id" value="' . htmlspecialchars($slot['id']) . '">
+                                                                    <button type="submit" class="btn btn-danger btn-sm" name="delete">&times;</button>
+                                                                </form>';
+                                                    echo '<div class="slot-buttons">' . ($slot['model_name'] ? '<span class="booked-slot">' . $slot_info . '</span>' : '<span class="non-booked">' . $time_display . '</span>') . $delete_form . '</div>';
+                                                }
+                                            } else {
+                                                echo '<div class="non-booked">' . $day . '</div>';
+                                            }
+                                            echo '</td>';
+                                            $day_counter++;
+                                        }
+
+                                        // Fill in empty cells for remaining days
+                                        while ($day_counter <= 7) {
+                                            echo '<td></td>';
+                                            $day_counter++;
+                                        }
+                                        ?>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
     </div>
 
     <!-- Include jQuery -->
