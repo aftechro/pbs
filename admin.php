@@ -178,6 +178,17 @@ mysqli_close($conn);
             display: flex;
             justify-content: space-between;
         }
+	.flight-time {
+    font-family: monospace;
+    font-size: 18px;
+    color: #ffffff;
+    background-color: #343a40;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+
+
     </style>
 </head>
 <body>
@@ -262,18 +273,42 @@ mysqli_close($conn);
 </div>
 
         </div>
+
 <div class="card mt-3">
-    <h5 class="card-header">Next Booking</h5>
+    <h5 class="card-header" id="nextBookingHeader">
+        Next Booking in: <span id="countdown" class="flight-time"></span>
+    </h5>
     <div class="card-body">
         <?php if ($next_booking): ?>
-            <p class="card-title"><i class="fa fa-female"></i> With: <a href="https://instagram.com/<?= $next_booking['instagram_link'] ?>" target="_blank"><?= $next_booking['model_name'] ?></a></p>
-            <hr style="border-color: white;">
-            <p class="card-text"><i class="fa fa-calendar"></i>  Date: <?= date('l, d F Y', strtotime($next_booking['date'])) ?><br> <i class="fa fa-clock"></i> Time: <?= date('H:i', strtotime($next_booking['start_time'])) ?> - <?= date('H:i', strtotime($next_booking['end_time'])) ?></p>
+            <p class="card-title"><i class="fa fa-female"></i> With: <strong><a href="https://instagram.com/<?= $next_booking['instagram_link'] ?>" target="_blank"><?= $next_booking['model_name'] ?></a></strong></p>
+            <!-- hr style="border-color: white;" -->
+            <p class="card-text"><i class="fa fa-calendar"></i> <?= date('l, d F Y', strtotime($next_booking['date'])) ?>  / <?= date('H:i', strtotime($next_booking['start_time'])) ?> - <?= date('H:i', strtotime($next_booking['end_time'])) ?></p>
+            <script>
+                // Set the countdown timer
+                var countdownDate = new Date("<?= $next_booking['date'] ?> <?= $next_booking['start_time'] ?>").getTime();
+                var countdownFunction = setInterval(function() {
+                    var now = new Date().getTime();
+                    var distance = countdownDate - now;
+                    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                    document.getElementById("countdown").innerHTML = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+                    if (distance < 0) {
+                        clearInterval(countdownFunction);
+                        document.getElementById("countdown").innerHTML = "Booking expired";
+                    }
+                }, 1000);
+            </script>
         <?php else: ?>
             <p class="card-text">No bookings scheduled.</p>
         <?php endif; ?>
     </div>
 </div>
+
+                           
+                            
+
     </div>
 </div>
 
