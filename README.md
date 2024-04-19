@@ -11,7 +11,8 @@ PBS is a simple PHP-based booking system designed to manage photographer booking
 ## Preview
 
 ### Admin Panel
-![Admin Panel](https://github.com/aftechro/pbs/assets/38830718/0046a7b1-6afa-49c4-8859-8ce6048321a2)
+![Admin Panel](https://github.com/aftechro/pbs/assets/38830718/bc59f257-3742-4db9-b59f-678bc3f85246)
+
 
 
 
