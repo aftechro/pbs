@@ -10,6 +10,9 @@ PBS is a simple PHP-based and Bootrsap booking system designed to manage photogr
 
 ## Preview
 
+Access https://demo.afmedia.ie/ 
+user/pass: demo / demo
+
 ### Admin Panel
 ![Admin Panel](https://github.com/aftechro/pbs/assets/38830718/3e06001b-f68d-4e3c-8b6d-0c649ca2cba5)
 ![Admin Panel](https://github.com/aftechro/pbs/assets/38830718/b883afa0-b878-4c07-84e6-491b049cfe63)
