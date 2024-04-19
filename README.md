@@ -1,6 +1,6 @@
 # Photographer Booking System (PBS)
 
-PBS is a simple PHP-based booking system designed to manage photographer bookings. It provides an easy-to-use interface for setting available dates and viewing bookings.
+PBS is a simple PHP-based and Bootrsap booking system designed to manage photographer bookings. It provides an easy-to-use interface for setting available dates and viewing bookings.
 
 ## Features
 
@@ -11,7 +11,10 @@ PBS is a simple PHP-based booking system designed to manage photographer booking
 ## Preview
 
 ### Admin Panel
-![Admin Panel](https://github.com/aftechro/pbs/assets/38830718/bc59f257-3742-4db9-b59f-678bc3f85246)
+![Admin Panel](https://github.com/aftechro/pbs/assets/38830718/3e06001b-f68d-4e3c-8b6d-0c649ca2cba5)
+![Admin Panel](https://github.com/aftechro/pbs/assets/38830718/b883afa0-b878-4c07-84e6-491b049cfe63)
+
+
 
 
 
