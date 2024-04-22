@@ -84,6 +84,8 @@ function countAvailableSlots($conn) {
     return $row['available_slots_count'];
 }
 
+
+
 // Function to fetch the next booked slot
 function fetchNextBooking($conn) {
     $sql = "SELECT * FROM available_times WHERE is_booked = 1 AND date >= CURDATE() ORDER BY date ASC LIMIT 1";
@@ -218,41 +220,30 @@ mysqli_close($conn);
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <!-- Bookings -->
             <a class="navbar-brand" href="#">Bookings</a>
-
-            <!-- Toggler/collapsible Button -->
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-
-            <!-- Navbar links -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mr-auto">
-                    <!-- Home -->
                     <li class="nav-item">
                         <a class="nav-link" href="index.php">Home</a>
                     </li>
-                    <!-- Set slots -->
                     <li class="nav-item">
                         <a class="nav-link" href="admin.php">Set slots</a>
                     </li>
                     <?php if (isset($_SESSION['username'])): ?>
-                    <!-- Logged-in user's navigation links -->
                     <li class="nav-item">
                         <a class="nav-link" href="logout.php">Logout</a>
                     </li>
                     <?php endif; ?>
-
-
                 </ul>
             </div>
         </div>
     </nav>
 
-
-
     <br>
+
     <?php if (isset($_SESSION['username'])): ?>
     <div class="container">
         <div class="row">
@@ -316,7 +307,6 @@ mysqli_close($conn);
                         <p class="card-title"><i class="fa fa-female"></i> With: <strong><a href="https://instagram.com/<?= $next_booking['instagram_link'] ?>" target="_blank"><?= $next_booking['model_name'] ?></a></strong></p>
                         <p class="card-text"><i class="fa fa-calendar"></i> <?= date('l, d F Y', strtotime($next_booking['date'])) ?> / <?= date('H:i', strtotime($next_booking['start_time'])) ?> - <?= date('H:i', strtotime($next_booking['end_time'])) ?></p>
                         <script>
-                            // Set the countdown timer
                             var countdownDate = new Date("<?= $next_booking['date'] ?> <?= $next_booking['start_time'] ?>").getTime();
                             var countdownFunction = setInterval(function() {
                                 var now = new Date().getTime();
@@ -373,7 +363,6 @@ mysqli_close($conn);
                                 <tbody>
                                     <tr>
                                         <?php
-                                        // Fill in empty cells for days before the first day of the month
                                         for ($i = 1; $i < $first_day_of_month; $i++) {
                                             echo '<td></td>';
                                         }
@@ -387,20 +376,21 @@ mysqli_close($conn);
                                             $date = sprintf("%d-%02d-%02d", $current_year, $current_month, $day);
                                             echo '<td>';
                                             if (isset($available_slots[$day])) {
-                                                echo '<div class="booked-date">' . $day . '</div>';
+                                                echo '<div class="booked-date" style="background-color: rgba(64, 64, 64, 0.5);">' . $day . '</div>';
                                                 $slot_count = count($available_slots[$day]);
                                                 $slot_index = 0;
                                                 foreach ($available_slots[$day] as $slot) {
                                                     $time_display = date('H:i', strtotime($slot['start_time'])) . ' - ' . date('H:i', strtotime($slot['end_time']));
                                                     $slot_info = '<div class="slot-info"><small style="display:block;">' . $time_display . '</small><a href="https://instagram.com/' . htmlspecialchars($slot['instagram_link']) . '" target="_blank">' . htmlspecialchars($slot['model_name']) . '</a></div>';
-                                                    $delete_form = '<form method="post" action="" class="float-right">
-                                                        <input type="hidden" name="slot_id" value="' . htmlspecialchars($slot['id']) . '">
-                                                        <button type="submit" class="btn btn-danger btn-sm" name="delete">&times;</button>
-                                                    </form>';
-                                                    // Check if it's the last slot
+                                                    $delete_form = '';
+                                                    if ($date >= date("Y-m-d")) {
+                                                        $delete_form = '<form method="post" action="" class="float-right" onsubmit="return confirm(\'Are you sure you want to delete this slot?\');">
+                                                            <input type="hidden" name="slot_id" value="' . htmlspecialchars($slot['id']) . '">
+                                                            <button type="submit" class="btn btn-danger btn-sm" name="delete">&times;</button>
+                                                        </form>';
+                                                    }
                                                     if ($slot_index < $slot_count - 1) {
                                                         echo '<div class="slot-buttons"><span class="booked-slot">' . $slot_info . '</span>' . $delete_form . '</div>';
-                                                        // Add horizontal line if it's not the last slot
                                                         echo '<hr style="border-color: grey;">';
                                                     } else {
                                                         echo '<div class="slot-buttons">' . ($slot['model_name'] ? '<span class="booked-slot">' . $slot_info . '</span>' : '<span class="non-booked">' . $time_display . '</span>') . $delete_form . '</div>';
@@ -408,13 +398,12 @@ mysqli_close($conn);
                                                     $slot_index++;
                                                 }
                                             } else {
-                                                echo '<div class="non-booked">' . $day . '</div>';
+                                                echo '<div class="non-booked" style="background-color: rgba(64, 64, 64, 0.5);">' . $day . '</div>';
                                             }
                                             echo '</td>';
                                             $day_counter++;
                                         }
 
-                                        // Fill in empty cells for remaining days
                                         while ($day_counter <= 7) {
                                             echo '<td></td>';
                                             $day_counter++;
@@ -422,7 +411,6 @@ mysqli_close($conn);
                                         ?>
                                     </tr>
                                 </tbody>
-
                             </table>
                         </div>
                     </div>
@@ -462,15 +450,10 @@ mysqli_close($conn);
 
     <?php endif; ?>
 
-    <!-- Include jQuery -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <!-- Include Flatpickr JS -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <!-- Include Bootstrap JS -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
     <script>
-        // Initialize Flatpickr for date picker
         flatpickr("#dates", {
             mode: "multiple",
             dateFormat: "Y-m-d",
