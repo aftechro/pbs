@@ -66,17 +66,19 @@ function fetchAvailableSlotsForMonth($conn, $year, $month) {
     return array('first_day_of_month' => $first_day_of_month, 'available_slots' => $available_slots);
 }
 
-// Function to count bookings
+// Function to count bookings from today onwards
 function countBookings($conn) {
-    $sql = "SELECT COUNT(*) AS bookings_count FROM available_times WHERE is_booked = 1";
+    $today = date("Y-m-d");
+    $sql = "SELECT COUNT(*) AS bookings_count FROM available_times WHERE is_booked = 1 AND date >= '$today'";
     $result = mysqli_query($conn, $sql);
     $row = mysqli_fetch_assoc($result);
     return $row['bookings_count'];
 }
 
-// Function to count available slots
+// Function to count available slots from today onwards
 function countAvailableSlots($conn) {
-    $sql = "SELECT COUNT(*) AS available_slots_count FROM available_times WHERE is_booked = 0";
+    $today = date("Y-m-d");
+    $sql = "SELECT COUNT(*) AS available_slots_count FROM available_times WHERE is_booked = 0 AND date >= '$today'";
     $result = mysqli_query($conn, $sql);
     $row = mysqli_fetch_assoc($result);
     return $row['available_slots_count'];
