@@ -44,3 +44,21 @@ Feel free to fork this repository and make any enhancements or modifications you
 This project is licensed under the [Creative Commons Zero v1.0 Universal License](https://creativecommons.org/publicdomain/zero/1.0/).
 
 You are free to use this project for any purpose, without any conditions, unless such conditions are required by law.
+
+## Support the Project ❤️
+
+<table>
+  <tr>
+    <td>
+      <a href="https://paypal.me/aftechro?country.x=IE&locale.x=en_US">
+        <img src="https://github.com/user-attachments/assets/f3582f15-36b3-4e05-bfbf-93275cfcc6ec" alt="Donate via PayPal" width="300"/>
+      </a>
+    </td>
+    <td style="padding-left: 20px;">
+      If you find this project useful and would like to show your appreciation, consider making a donation via PayPal, Click on the Paypal logo. Your contributions help improve the project and keep it running.  
+      <br><br>
+      <strong>Thank you!</strong> Your support means a lot and encourages further development!
+    </td>
+  </tr>
+</table>
+
